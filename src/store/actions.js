@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+// import HackerNews from '@/api/hn'
 import VueFire from 'vuefire'
 import Firebase from 'firebase'
 Vue.use(VueResource)
@@ -20,8 +21,8 @@ const API = FIREBASE_APP.database().ref(VERSION)
 // Vue.http.headers.common['Content-Type'] = 'application/json'
 
 export default {
-    topStories (key) {
-        return API.child('topstories').on('value', snapshot => {
+    topStories (store) {
+        API.child('topstories').on('value', snapshot => {
             store.commit('TOPSTORIES', snapshot.val())
         })
             // 'value', snapshot => {
@@ -39,3 +40,16 @@ export default {
         //     )
     }
 }
+
+// export default {
+//     topStories (store) {
+//         HackerNews.topStories().then(data => {
+//             // if (data.status === 200) {
+//                 // data['url'] = key
+//             store.commit('TOPSTORIES', data)
+//             // } else {
+//                 // store.commit('ERROROBJ', data)
+//             // }
+//         })
+//     }
+// }
