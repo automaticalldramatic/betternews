@@ -1,12 +1,12 @@
 <template>
     <div>
         <h3>
-            <center v-if="this.$store.topStories.fromFireBase">Loading ...</center>
+            <center>Loading ...</center>
         </h3>
         <transition name="fade-out-left">
             <div class="row">
                 <ul id="example-2">
-                    <li v-for="(stories, index) in this.$store.topStories.data">
+                    <li v-for="(stories, index) in topStories.data">
                         {{ index }} - {{ stories }}
                     </li>
                 </ul>
@@ -18,10 +18,9 @@
 <script>
 export default {
     name: 'home',
+
     data () {
-        return {
-            loadingMsg: false
-        }
+        return {}
     },
     methods: {
         getTopStories () {
@@ -30,12 +29,10 @@ export default {
         }
     },
     computed: {
-        topStories: {
-            // getter
-            get: function () {
-                console.log('getter', this.$store.topStories)
-                return this.$store.dispatch('topStories')
-            }
+
+        topStories () {
+            this.$store.dispatch('topStories')
+            return this.$store.getters.topStories
         }
 
     },
