@@ -3,19 +3,16 @@
         <h3>
             <center v-show="topStories.fromFireBase == false">Loading ...</center>
         </h3>
-            <div class="container" v-show="topStories.fromFireBase == true">
-                    <ul>
-                        <li v-for="(stories, index) in topStories.data" :key="stories.id" class="column-20">
-                            <transition-group name="fade-out-left" tag="div" class="">
-                                <h5>{{stories.title}}</h5>
-                                <span>by: {{stories.by}}</span>
-                            </transition-group>
-                        </li>
-
-                    </ul>
-                    <!-- </transition-group> -->
-                </div>
+        <div class="pure-g" v-show="topStories.fromFireBase == true">
+                <transition-group name="fade-in-left" tag="ul" class="pure-g">
+                    <li v-for="(stories, index) in topStories.data" :key="index" class="pure-u-1-3" :class="{ 'active': index % 5 === 0  }">
+                        <h5>{{stories.title}}</h5>
+                        <span>by: {{stories.by}}</span>
+                    </li>
+                </transition-group>
+                <!-- </transition-group> -->
             </div>
+        </div>
     </div>
 </template>
 
@@ -57,11 +54,17 @@ h1, h2 {
 ul {
     list-style-type: none;
     padding: 0;
+    overflow-y: auto;
+    overflow-x: scroll;
 }
 
 li {
-    // display: inline-block;
-    border: 1px solid;
+    // border: 1px solid;
+    // height: 100vh;
+    // padding: 3em 5em;
+    &:nth-child(2n) {
+        background: #eee;
+    }
 }
 
 a {
@@ -90,7 +93,7 @@ a {
 
 .fade-in-left-leave-active,
 .fade-in-left-enter-active {
-    transition: transform .6s ease;
+    transition: transform .2s ease;
 }
 .fade-out-left-enter-active,
 .fade-in-bottom-enter-active,

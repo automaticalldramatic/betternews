@@ -5,7 +5,7 @@
 </template>
 
 <script>
-require('milligram')
+require('purecss')
 export default {
     name: 'app'
 }
