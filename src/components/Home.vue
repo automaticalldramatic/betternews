@@ -1,17 +1,21 @@
 <template>
     <div>
         <h3>
-            <center>Loading ...</center>
+            <center v-show="topStories.fromFireBase == false">Loading ...</center>
         </h3>
-        <transition name="fade-out-left">
-            <div class="row">
-                <ul id="example-2">
-                    <li v-for="(stories, index) in topStories.data">
-                        {{ index }} - {{ stories }}
-                    </li>
-                </ul>
+            <div class="container" v-show="topStories.fromFireBase == true">
+                    <ul>
+                        <li v-for="(stories, index) in topStories.data" :key="stories.id" class="column-20">
+                            <transition-group name="fade-out-left" tag="div" class="">
+                                <h5>{{stories.title}}</h5>
+                                <span>by: {{stories.by}}</span>
+                            </transition-group>
+                        </li>
+
+                    </ul>
+                    <!-- </transition-group> -->
+                </div>
             </div>
-        </transition>
     </div>
 </template>
 
@@ -38,16 +42,14 @@ export default {
     },
     watch: {
         topStories (newObj) {
-            console.log('from watcheer', this.$store.topStories)
-            // this.loadingMsg = true
-            // this.getTopStories()
+            console.log('wa', newObj)
         }
     }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 h1, h2 {
     font-weight: normal;
 }
@@ -58,12 +60,15 @@ ul {
 }
 
 li {
-    display: inline-block;
-    margin: 0 10px;
+    // display: inline-block;
+    border: 1px solid;
 }
 
 a {
     color: #42b983;
+}
+.stories-list {
+
 }
 .fade-in-left-enter,
 .fade-in-left-leave-active {

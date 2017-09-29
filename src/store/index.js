@@ -8,7 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         'topStories': {
-            'data': {},
+            'data': [],
             'fromFireBase': false
         },
         'error': {

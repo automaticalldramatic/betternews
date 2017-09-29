@@ -10,11 +10,21 @@ const API_URL = 'https://hacker-news.firebaseio.com'
 const VERSION = '/v0'
 const FIREBASE_APP = Firebase.initializeApp({ databaseURL: API_URL })
 const API = FIREBASE_APP.database().ref(VERSION)
+const ITEMS_CACHE = Object.create(null)
 
 export default {
     topStories (store) {
         API.child('topstories').on('value', snapshot => {
-            store.commit('TOPSTORIES', snapshot.val())
+            console.log(snapshot.val())
+            let arr = snapshot.val()
+            let stories = []
+            arr.forEach(function (id) {
+                API.child('item/' + id).once('value', snapshot => {
+                    const story = ITEMS_CACHE[id] = snapshot.val()
+                    stories.push(story)
+                })
+            })
+            store.commit('TOPSTORIES', stories)
         })
     }
 }
