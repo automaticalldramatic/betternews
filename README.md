@@ -1,4 +1,4 @@
-# hackernews
+# BetterNews
 
 > A beautiful version of Hackernews
 
