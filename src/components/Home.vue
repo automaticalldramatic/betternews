@@ -1,11 +1,11 @@
 <template>
     <div>
         <h3>
-            <center v-show="topStories.fromFireBase == false">Loading ...</center>
+            <center v-show="">Loading ...</center>
         </h3>
-        <div class="pure-g" v-show="topStories.fromFireBase == true">
+        <div class="pure-g" v-show="topStories.length > 0">
                 <transition-group name="fade-in-left" tag="ul" class="pure-g">
-                    <li v-for="(stories, index) in topStories.data" :key="index" class="pure-u-1-3" :class="{ 'active': index % 5 === 0  }">
+                    <li v-for="(stories, index) in topStories" :key="index" class="pure-u-1-3" :class="{ 'active': index % 5 === 0  }">
                         <h5>{{stories.title}}</h5>
                         <span>by: {{stories.by}}</span>
                     </li>
@@ -21,26 +21,25 @@ export default {
     name: 'home',
 
     data () {
-        return {}
+        // console.log('stories', this.$store.getters.pageStories)
+        return {
+            // topStories: this.$store.getters.pageStories
+
+        }
     },
+
     methods: {
         getTopStories () {
-            this.loadingMsg = false
-            return this.$store.getters.topStories
+            return this.$store.getters.pageStories
         }
     },
     computed: {
-
         topStories () {
-            this.$store.dispatch('topStories')
-            return this.$store.getters.topStories
+            return this.getTopStories()
         }
-
     },
     watch: {
-        topStories (newObj) {
-            console.log('wa', newObj)
-        }
+        topStories (newObj) {}
     }
 }
 </script>

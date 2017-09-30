@@ -9,33 +9,41 @@ const API_URL = 'https://hacker-news.firebaseio.com'
 const VERSION = '/v0'
 const FIREBASE_APP = Firebase.initializeApp({ databaseURL: API_URL })
 const API = FIREBASE_APP.database().ref(VERSION)
-// const ITEMS_CACHE = Object.create(null)
-// const STORIES_PER_PAGE = store.storiesPerPage = 30
-// const STORIES_PER_PAGE = 30
-// const SCRAPE_URL = API_URL + 'scrape'
-// let topStoryIds = []
 
-// Vue.http.options.emulateJSON = true
-// Vue.http.headers.common['Accept'] = 'application/json'
-// Vue.http.headers.common['Content-Type'] = 'application/json'
+function fetch (child) {
+    console.log(`fetching ${child}...`)
+    const CACHE = API.cachedItems
+    if (CACHE && CACHE.has(child)) {
+        console.log(`Cache hit for ${child}.`)
+        return Promise.resolve(CACHE.get(child))
+    } else {
+        return new Promise((resolve, reject) => {
+            API.child(child).once('value', snapshot => {
+                const val = snapshot.val()
+                // mark the timestamp when this item is CACHEd
+                if (val) val.__lastUpdated = Date.now()
+                CACHE && CACHE.set(child, val)
+                console.log(`fetched ${child}.`)
+                resolve(val)
+            }, reject)
+        })
+    }
+}
 
 export default {
-    topStories (key) {
-        return API.child('topstories').on('value', snapshot => {
-            store.commit('TOPSTORIES', snapshot.val())
-        })
-            // 'value', snapshot => {
-            // console.log(snapshot)
-            // topStoryIds = snapshot.val()
+    topStories (store) {
+        return API.cachedIds && API.cachedIds['top']
+            ? Promise.resolve(API.cachedIds['top'])
+            : fetch(`topstories`)
+    },
 
-        // })
-        // return Vue.http.post(SCRAPE_URL, { 'url': key })
-        //     .then(
-        //         res => res.json(),
-        //         res => {
-        //             console.error('error: ', res.status, res.body.data.message)
-        //             return res.json()
-        //         }
-        //     )
+    fetchStory (id) {
+        return fetch(`item/${id}`)
+    },
+
+    fetchStories (ids) {
+        return Promise.all(ids.map(id =>
+            this.fetchStory(id)
+        ))
     }
 }

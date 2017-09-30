@@ -1,30 +1,47 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
-// import HackerNews from '@/api/hn'
-import VueFire from 'vuefire'
-import Firebase from 'firebase'
-Vue.use(VueResource)
-Vue.use(VueFire)
+import HackerNews from '@/api/hn'
 
-const API_URL = 'https://hacker-news.firebaseio.com'
-const VERSION = '/v0'
-const FIREBASE_APP = Firebase.initializeApp({ databaseURL: API_URL })
-const API = FIREBASE_APP.database().ref(VERSION)
-const ITEMS_CACHE = Object.create(null)
+Vue.use(VueResource)
+
+// const ITEMS_CACHE = Object.create(null)
 
 export default {
-    topStories (store) {
-        API.child('topstories').on('value', snapshot => {
-            console.log(snapshot.val())
-            let arr = snapshot.val()
-            let stories = []
-            arr.forEach(function (id) {
-                API.child('item/' + id).once('value', snapshot => {
-                    const story = ITEMS_CACHE[id] = snapshot.val()
-                    stories.push(story)
-                })
+    FETCH_TOP_STORIES: ({ commit, dispatch, state }) => {
+        return HackerNews.topStories()
+            .then(topStories => {
+                commit('TOPSTORIES', topStories)
             })
-            store.commit('TOPSTORIES', stories)
+            .then(() =>
+                dispatch('GET_PAGE_STORY_IDS')
+            )
+    },
+
+    // ensure all active items are fetched
+    GET_PAGE_STORY_IDS: ({ dispatch, getters }) => {
+        return dispatch('FETCH_STORIES', {
+            ids: getters.pageStoryIds
         })
+    },
+
+    FETCH_STORIES: ({ commit, state }, { ids }) => {
+        // on the client, the store itself serves as a cache.
+        // only fetch items that we do not already have, or has expired (3 minutes)
+        const now = Date.now()
+        ids = ids.filter(id => {
+            const story = state.stories[id]
+            if (!story) {
+                return true
+            }
+            if (now - story.__lastUpdated > 1000 * 60 * 3) {
+                return true
+            }
+            return false
+        })
+        if (ids.length) {
+            return HackerNews.fetchStories(ids).then(stories => commit('SET_STORIES', { stories }))
+        } else {
+            return Promise.resolve()
+        }
     }
 }
