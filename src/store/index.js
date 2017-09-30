@@ -8,8 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         'topStories': {
-            'ids': [],
-            'fromFireBase': false
+            'ids': []
         },
         'stories': {/* [id: number]: Story */},
         'storiesPerPage': 20,
